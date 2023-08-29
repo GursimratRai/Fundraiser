@@ -10,14 +10,35 @@ import { useState , useEffect } from 'react';
 import Link from 'next/link'
 import { toast } from 'react-toastify'
 
-export default function Index({AllData,HealthData,EducationData,AnimalData}) {
-  const [filter, setFilter] = useState(AllData);
+export default function Index() {
+  const [filter, setFilter] = useState([]);
   const [clickable,setClickable] = useState(false);
 
   useEffect(() => {
     const Request = async () => {    
       if (typeof window.ethereum !== 'undefined') {
-        setClickable(true);
+        const provider = new ethers.providers.JsonRpcProvider(
+          process.env.NEXT_PUBLIC_RPC_URL
+        );
+        const contract = new ethers.Contract(
+           process.env.NEXT_PUBLIC_ADDRESS,
+           CampaignFactory.abi,
+           provider
+        );
+      
+        const getAllCampaigns = contract.filters.campaignCreated();
+        const AllCampaigns = await contract.queryFilter(getAllCampaigns);
+        const AllData = AllCampaigns.map((e) => {
+          return {
+            title:e.args.title,
+            image:e.args.imageUrl,
+            timeStamp:parseInt(e.args.timestamp),
+            amount:ethers.utils.formatEther(e.args.requiredAmount),
+            owner:e.args.owner,
+            address:e.args.campaingAddress
+        }});
+        setFilter(AllData);
+        setClickable(true);        
       } else {
         toast.error("Please Install MetaMask in your browser");
       }
@@ -25,16 +46,43 @@ export default function Index({AllData,HealthData,EducationData,AnimalData}) {
     Request();  
   }, [])
   
+  const getAllData = async(category) => {
+    const provider = new ethers.providers.JsonRpcProvider(
+          process.env.NEXT_PUBLIC_RPC_URL
+        );
+        const contract = new ethers.Contract(
+          process.env.NEXT_PUBLIC_ADDRESS,
+          CampaignFactory.abi,
+          provider
+        );
+        
+        var getAllCampaigns = contract.filters.campaignCreated();
+        if ( category.length > 0 ) {
+          getAllCampaigns = contract.filters.campaignCreated(null,null,null,null,null,null,category);
+        }
+        const AllCampaigns = await contract.queryFilter(getAllCampaigns);
+        const AllData = AllCampaigns.map((e) => {
+          return {
+            title:e.args.title,
+            image:e.args.imageUrl,
+            timeStamp:parseInt(e.args.timestamp),
+            amount:ethers.utils.formatEther(e.args.requiredAmount),
+            owner:e.args.owner,
+            address:e.args.campaingAddress
+        }});
+        setFilter(AllData);
+  };
+
   return (
     <HomeWrapper>
 
       {/* Filter Section */}
       <FilterWrapper>
         <FilterAltIcon style={{fontSize:40}} />
-        <Category onClick={() => setFilter(AllData)}>All</Category>
-        <Category onClick={() => setFilter(HealthData)}>Health</Category>
-        <Category onClick={() => setFilter(EducationData)}>Education</Category>
-        <Category onClick={() => setFilter(AnimalData)}>Animal</Category>
+        <Category onClick={() => getAllData('')}>All</Category>
+        <Category onClick={() => getAllData('Health')}>Health</Category>
+        <Category onClick={() => getAllData('education')}>Education</Category>
+        <Category onClick={() => getAllData('Animal')}>Animal</Category>
       </FilterWrapper>
 
       {/* Cards Container */}
@@ -79,75 +127,75 @@ export default function Index({AllData,HealthData,EducationData,AnimalData}) {
   )
 }
 
-export async function getStaticProps(){
+// export async function getStaticProps(){
  
-  const provider = new ethers.providers.JsonRpcProvider(
-    process.env.NEXT_PUBLIC_RPC_URL
-  );
-  const contract = new ethers.Contract(
-     process.env.NEXT_PUBLIC_ADDRESS,
-     CampaignFactory.abi,
-     provider
-  );
+//   const provider = new ethers.providers.JsonRpcProvider(
+//     process.env.NEXT_PUBLIC_RPC_URL
+//   );
+//   const contract = new ethers.Contract(
+//      process.env.NEXT_PUBLIC_ADDRESS,
+//      CampaignFactory.abi,
+//      provider
+//   );
 
-  const getAllCampaigns = contract.filters.campaignCreated();
-  const AllCampaigns = await contract.queryFilter(getAllCampaigns);
-  const AllData = AllCampaigns.map((e) => {
-    return {
-      title:e.args.title,
-      image:e.args.imageUrl,
-      timeStamp:parseInt(e.args.timestamp),
-      amount:ethers.utils.formatEther(e.args.requiredAmount),
-      owner:e.args.owner,
-      address:e.args.campaingAddress
-  }});
+//   const getAllCampaigns = contract.filters.campaignCreated();
+//   const AllCampaigns = await contract.queryFilter(getAllCampaigns);
+//   const AllData = AllCampaigns.map((e) => {
+//     return {
+//       title:e.args.title,
+//       image:e.args.imageUrl,
+//       timeStamp:parseInt(e.args.timestamp),
+//       amount:ethers.utils.formatEther(e.args.requiredAmount),
+//       owner:e.args.owner,
+//       address:e.args.campaingAddress
+//   }});
 
-  const getHealthCampaigns = contract.filters.campaignCreated(null,null,null,null,null,null,'Health');
-  const HealthCampaigns = await contract.queryFilter(getHealthCampaigns);
-  const HealthData = HealthCampaigns.map((e) => {
-    return {
-    title:e.args.title,
-    image:e.args.imageUrl,
-    timeStamp:parseInt(e.args.timestamp),
-    amount:ethers.utils.formatEther(e.args.requiredAmount),
-    owner:e.args.owner,
-    address:e.args.campaingAddress
-  }});
+//   const getHealthCampaigns = contract.filters.campaignCreated(null,null,null,null,null,null,'Health');
+//   const HealthCampaigns = await contract.queryFilter(getHealthCampaigns);
+//   const HealthData = HealthCampaigns.map((e) => {
+//     return {
+//     title:e.args.title,
+//     image:e.args.imageUrl,
+//     timeStamp:parseInt(e.args.timestamp),
+//     amount:ethers.utils.formatEther(e.args.requiredAmount),
+//     owner:e.args.owner,
+//     address:e.args.campaingAddress
+//   }});
     
-  const getEducationCampaigns = contract.filters.campaignCreated(null,null,null,null,null,null,'education');
-  const EducationCampaigns = await contract.queryFilter(getEducationCampaigns);
-  const EducationData = EducationCampaigns.map((e) => {
-    return {
-      title:e.args.title,
-      image:e.args.imageUrl,
-      timeStamp:parseInt(e.args.timestamp),
-      amount:ethers.utils.formatEther(e.args.requiredAmount),
-      owner:e.args.owner,
-      address:e.args.campaingAddress
-  }});
+//   const getEducationCampaigns = contract.filters.campaignCreated(null,null,null,null,null,null,'education');
+//   const EducationCampaigns = await contract.queryFilter(getEducationCampaigns);
+//   const EducationData = EducationCampaigns.map((e) => {
+//     return {
+//       title:e.args.title,
+//       image:e.args.imageUrl,
+//       timeStamp:parseInt(e.args.timestamp),
+//       amount:ethers.utils.formatEther(e.args.requiredAmount),
+//       owner:e.args.owner,
+//       address:e.args.campaingAddress
+//   }});
 
-  const getAnimalCampaigns = contract.filters.campaignCreated(null,null,null,null,null,null,'Animal');
-  const  AnimalCampaigns = await contract.queryFilter(getAnimalCampaigns);    
-  const AnimalData = AnimalCampaigns.map((e) => {
-    return {
-      title:e.args.title,
-      image:e.args.imageUrl,
-      timeStamp:parseInt(e.args.timestamp),
-      amount:ethers.utils.formatEther(e.args.requiredAmount),
-      owner:e.args.owner,
-      address:e.args.campaingAddress
-  }});
+//   const getAnimalCampaigns = contract.filters.campaignCreated(null,null,null,null,null,null,'Animal');
+//   const  AnimalCampaigns = await contract.queryFilter(getAnimalCampaigns);    
+//   const AnimalData = AnimalCampaigns.map((e) => {
+//     return {
+//       title:e.args.title,
+//       image:e.args.imageUrl,
+//       timeStamp:parseInt(e.args.timestamp),
+//       amount:ethers.utils.formatEther(e.args.requiredAmount),
+//       owner:e.args.owner,
+//       address:e.args.campaingAddress
+//   }});
                 
-  return {
-      props:{
-        AllData,
-        HealthData,
-        EducationData,
-        AnimalData
-  }
-  }
+//   return {
+//       props:{
+//         AllData,
+//         HealthData,
+//         EducationData,
+//         AnimalData
+//   }
+//   }
 
-};
+// };
 
 const HomeWrapper = styled.div`
   display: flex;

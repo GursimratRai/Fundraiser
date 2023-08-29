@@ -6,6 +6,7 @@ import {useState, createContext} from 'react'
 import { TailSpin } from 'react-loader-spinner'
 import { ethers } from 'ethers'
 import { toast } from 'react-toastify'
+import Link from 'next/link'
 import CampaignFactory from '../../artifacts/contracts/Campaign.sol/CampaignFactory.json'
 
 const FormState = createContext();
@@ -89,9 +90,11 @@ const Form = () => {
                 <Address>
                     <h1>Campaign started successfully</h1>  
                     <h1>{address}</h1>
-                    <Button>
-                        Go to Campaign  
-                    </Button>
+                    <Link passHref href={address !== "" ? '/' + address : "" }>
+                        <Button>
+                            Go to Campaign  
+                        </Button>
+                    </Link>
                 </Address> 
                 :              
                 <FormInputsWrapper>
@@ -146,20 +149,19 @@ const Address = styled.div`
 `
 
 const Button = styled.button`
-    display: flex;
-    justify-content:center;
-    width:30% ;
-    padding:15px ;
-    color:white ;
-    background-color:#4285F5 ;
-    background-image:
-    linear-gradient(180deg, #4285F5 0%, #1A0DBE 80%) ;
-    border:none;
-    border-radius:20px;
-    margin-top:30px ;
-    cursor: pointer;
-    font-weight:bold ;
-    font-size:large ;
+  padding: 8px;
+  text-align: center;
+  width: 100%;
+  background-color:#4285F5 ;
+  background-image:
+  linear-gradient(180deg, #4285F5 0%, #1A0DBE 80%); 
+  border: none;
+  cursor: pointer;
+  font-family: 'Roboto';
+  text-transform: uppercase;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
 `
 
 export default Form
