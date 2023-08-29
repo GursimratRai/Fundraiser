@@ -6,12 +6,25 @@ import EventIcon from '@mui/icons-material/Event';
 import Image from 'next/image';
 import { ethers } from 'ethers';
 import CampaignFactory from '../artifacts/contracts/Campaign.sol/CampaignFactory.json'
-import { useState } from 'react';
+import { useState , useEffect } from 'react';
 import Link from 'next/link'
+import { toast } from 'react-toastify'
 
 export default function Index({AllData,HealthData,EducationData,AnimalData}) {
   const [filter, setFilter] = useState(AllData);
+  const [clickable,setClickable] = useState(false);
 
+  useEffect(() => {
+    const Request = async () => {    
+      if (typeof window.ethereum !== 'undefined') {
+        setClickable(true);
+      } else {
+        toast.error("Please Install MetaMask in your browser");
+      }
+    }
+    Request();  
+  }, [])
+  
   return (
     <HomeWrapper>
 
@@ -53,7 +66,7 @@ export default function Index({AllData,HealthData,EducationData,AnimalData}) {
             <Text><EventIcon /></Text>
             <TextValue>{new Date(e.timeStamp * 1000).toUTCString()}</TextValue>
           </CardData>
-          <Link passHref href={'/' + e.address}><Button>
+          <Link passHref href={clickable ? '/' + e.address : "" }><Button>
             Go to Campaign
           </Button></Link>
         </Card>

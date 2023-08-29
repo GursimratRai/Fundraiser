@@ -112,7 +112,7 @@ export default function Detail({Data, DonationsData}) {
                 <Donation key={e.timestamp}>
                 <DonationData>{e.donar.slice(0,6)}...{e.donar.slice(39)}</DonationData>
                 <DonationData>{e.amount} Matic</DonationData>
-                <DonationData>{new Date(e.timestamp * 1000).toLocaleString()}</DonationData>
+                <DonationData>{new Date(e.timestamp * 1000).toUTCString()}</DonationData>
               </Donation>
               )
             })
