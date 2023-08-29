@@ -12,7 +12,7 @@ const HeaderNav = () => {
             Campaigns
           </HeaderNavLinks>
       </Link>
-      <Link style={{ textDecoration: "none"}} href={'/createcampaign'}>
+      <Link style={{ textDecoration: "none"}} href={'/campaign'}>
           <HeaderNavLinks active={Router.pathname === "/createcampaign" ? true : false} >
              Create Campaign
           </HeaderNavLinks>

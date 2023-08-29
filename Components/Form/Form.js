@@ -40,39 +40,41 @@ const Form = () => {
     
     const startCampaign = async(e) => {
        e.preventDefault();
-       const provider = new ethers.providers.Web3Provider(window.ethereum);
-       const signer = provider.getSigner();
-        if (form.campaignTitle == "" ){
-            toast.warn("Title Field is Empty");
-        } else if (form.story == "") {
-            toast.warn("Story Field is Empty");
-        } else if (form.requiredAmount == "") {
-            toast.warn("Required Amount Field is Empty");
-        } else if (uploaded === false) {
-            toast.warn("Files Upload Reqired");
-        } else {
-            setLoading(true);
-            const contract = new ethers.Contract(
-              process.env.NEXT_PUBLIC_ADDRESS,
-              CampaignFactory.abi,
-              signer
-            );
+       if ( typeof window.ethereum === 'undefined' ) {
+            toast.error("Please Install MetaMask in your browser");
+       } else {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            if (form.campaignTitle == "" ){
+                toast.warn("Title Field is Empty");
+            } else if (form.story == "") {
+                toast.warn("Story Field is Empty");
+            } else if (form.requiredAmount == "") {
+                toast.warn("Required Amount Field is Empty");
+            } else if (uploaded === false) {
+                toast.warn("Files Upload Reqired");
+            } else {
+                setLoading(true);
+                const contract = new ethers.Contract(
+                    process.env.NEXT_PUBLIC_ADDRESS,
+                    CampaignFactory.abi,
+                    signer
+                );
             
-            const RequiredAmount = ethers.utils.parseEther(form.requiredAmount);
+                const RequiredAmount = ethers.utils.parseEther(form.requiredAmount);
                 
-            const campaignData = await contract.createCampaign(
-                form.campaignTitle,
-                RequiredAmount,
-                storyUrl,
-                form.category,
-                imageUrl
-            );
+                const campaignData = await contract.createCampaign(
+                    form.campaignTitle,
+                    RequiredAmount,
+                    storyUrl,
+                    form.category,
+                    imageUrl
+                );
 
-            console.log('campaignData -',campaignData);
-            await campaignData.wait();
-            setAddress(campaignData.to)
-
-        }       
+                await campaignData.wait();
+                setAddress(campaignData.to)
+            }   
+        }    
     }
 
   return (

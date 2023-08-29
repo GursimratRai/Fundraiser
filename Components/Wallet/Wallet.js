@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import {ethers} from 'ethers';
 import {useState} from 'react'
+import { toast } from 'react-toastify';
 
 const networks = {
     polygon:{
@@ -20,20 +21,24 @@ const Wallet = () => {
     const [address , setAddress] = useState("");
     const [balance , setBalance] = useState("");
     const ConnectWallet = async () => {
-        await window.ethereum.request({method:"eth_requestAccounts"});
-        const provider = new ethers.providers.Web3Provider(ethereum,"any");
-        if(provider.network !== 'matic'){
-            await window.ethereum.request({method:'wallet_addEthereumChain',params:[
-                {
-                    ...networks["polygon"]
-                }
-            ]})
-            const accounts = provider.getSigner();
-            const Address = await accounts.getAddress();
-            setAddress(Address);
-            const Balance = ethers.utils.formatEther(await accounts.getBalance());
-            setBalance(Balance);
-    
+        console.log("win",window.ethereum);
+        if ( typeof window.ethereum === 'undefined' ) {
+            toast.error("Please Install MetaMask in your browser");
+        } else {
+            await window.ethereum.request({method:"eth_requestAccounts"});
+            const provider = new ethers.providers.Web3Provider(ethereum,"any");
+            if(provider.network !== 'matic'){
+                await window.ethereum.request({method:'wallet_addEthereumChain',params:[
+                    {
+                        ...networks["polygon"]
+                    }
+                ]})
+                const accounts = provider.getSigner();
+                const Address = await accounts.getAddress();
+                setAddress(Address);
+                const Balance = ethers.utils.formatEther(await accounts.getBalance());
+                setBalance(Balance);
+            }
         }
     }
     return (

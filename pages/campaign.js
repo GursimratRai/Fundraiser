@@ -1,8 +1,8 @@
 import React from 'react'
 import CreateCampaign from '../Components/Campaign/CreateCampaign'
 
-const createcampaign = () => {
+const campaign = () => {
   return <CreateCampaign />
 }
 
-export default createcampaign
+export default campaign
