@@ -1,4 +1,26 @@
+# Fundraiser 
+
+Decentralised Digital Platform built with the objective of
+helping all the people in need, reach out to the donors
+all around the globe, without the fuss and worries of
+borders dividing us all.
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+
+## 🔗 Live link
+
+This application is available online [here](https://fundraiser-blush.vercel.app/)
+
+## Tech Stack
+
+**Client:**  EthersJs , Metamask , React , React Hooks  
+
+**Server:** Solidity
+
+**Database:** Ethereum Blockchain , IPFS
+
+**Technology:** Hardhat , VSCode , Infura 
 
 ## Getting Started
 
